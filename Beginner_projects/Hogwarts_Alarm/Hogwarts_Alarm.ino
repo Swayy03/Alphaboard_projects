@@ -1,155 +1,119 @@
 //The hogwarts Alarm, place it on your window pane every night and once the sun rises, the hogwarts theme will play as an alarm
-//To switch it off, you either unplug it or press any button
+//To switch it off, you either unplug it or turn the potentiometer to reduce sensitivity
+//sensitivity of the light sensor can be tuned using the potentiometer
 //HARDOCDED THE TUNES MYSELF 
-int voltPin = A0;
-int buzzPin = 9;
-int greenPin = 11;
-int redPin = 13;
-int readVal;
-int dtc1 = 430;
-int dtc2 = 480;
-int dtc3 = 570;
-int dtc4 = 470;
-int dtc5 = 620;
-int dtc6 = 860;
-int dtc7 = 650;
-int dtc8 = 550;
-int dtc9 = 590;
-int dtc10 = 650;
-int dtc11 = 700;
-int dtc12 = 570;
-int dtc13 = 850;
+#include <Arduino.h>
 
-void Hogwarts_Alarm(){
-  for(int i=0;i<=220;i++){
- digitalWrite(buzzPin,HIGH);
- delayMicroseconds(dtc6);
- digitalWrite(buzzPin,LOW);
- delayMicroseconds(dtc6);
- }
- delay(30);
+// Pins
+const int lightSensorPin = A0;
+const int potPin = A1;
+const int buzzPin = 9;
+const int greenPin = 11;
+const int redPin = 13;
+const int button1Pin = A4;
+const int button2Pin = A5;
 
- for(int i=0;i<=540;i++){
- digitalWrite(buzzPin,HIGH);
- delayMicroseconds(dtc7);
- digitalWrite(buzzPin,LOW);
- delayMicroseconds(dtc7);
- }
-delay(10);
+// Normal tune: C-D-E-F-G-A-B
+int tones[] = {262, 294, 330, 349, 392, 440, 494};
+int durations[] = {300, 300, 300, 300, 300, 300, 600};
 
- for(int i=0;i<=200;i++){
- digitalWrite(buzzPin,HIGH);
- delayMicroseconds(dtc8);
- digitalWrite(buzzPin,LOW);
- delayMicroseconds(dtc8);
- }
- 
+// Hogwarts tune duration constants (us)
+int dtc1 = 430, dtc2 = 480, dtc3 = 570, dtc4 = 470, dtc5 = 620;
+int dtc6 = 860, dtc7 = 650, dtc8 = 550, dtc9 = 590, dtc10 = 650;
+int dtc11 = 700, dtc12 = 570, dtc13 = 850;
 
- for(int i=0;i<=300;i++){
- digitalWrite(buzzPin,HIGH);
- delayMicroseconds(dtc9);
- digitalWrite(buzzPin,LOW);
- delayMicroseconds(dtc9);
- }
+bool alarmActive = false;
 
-
-for(int i=0;i<=600;i++){
- digitalWrite(buzzPin,HIGH);
- delayMicroseconds(dtc10);
- digitalWrite(buzzPin,LOW);
- delayMicroseconds(dtc10);
- }
- 
-  
- for(int i=0;i<=640;i++){
- digitalWrite(buzzPin,HIGH);
- delayMicroseconds(dtc1);
- digitalWrite(buzzPin,LOW);
- delayMicroseconds(dtc1);
- }
-
-  
- for(int i=0;i<=1100;i++){
- digitalWrite(buzzPin,HIGH);
- delayMicroseconds(dtc2);
- digitalWrite(buzzPin,LOW);
- delayMicroseconds(dtc2);
- }
- 
- 
- for(int i=0;i<=890;i++){
- digitalWrite(buzzPin,HIGH);
- delayMicroseconds(dtc3);
- digitalWrite(buzzPin,LOW);
- delayMicroseconds(dtc3);
- }
-
- 
- for(int i=0;i<=500;i++){
- digitalWrite(buzzPin,HIGH);
- delayMicroseconds(dtc7);
- digitalWrite(buzzPin,LOW);
- delayMicroseconds(dtc7);
- }
-
- for(int i=0;i<=200;i++){
- digitalWrite(buzzPin,HIGH);
- delayMicroseconds(dtc8);
- digitalWrite(buzzPin,LOW);
- delayMicroseconds(dtc8);
- }
- 
-
- for(int i=0;i<=200;i++){
- digitalWrite(buzzPin,HIGH);
- delayMicroseconds(dtc9);
- digitalWrite(buzzPin,LOW);
- delayMicroseconds(dtc9);
- }
-
-
-for(int i=0;i<=550;i++){
- digitalWrite(buzzPin,HIGH);
- delayMicroseconds(dtc11);
- digitalWrite(buzzPin,LOW);
- delayMicroseconds(dtc11);
- }
- for(int i=0;i<=400;i++){
- digitalWrite(buzzPin,HIGH);
- delayMicroseconds(dtc12);
- digitalWrite(buzzPin,LOW);
- delayMicroseconds(dtc12);
- }
-
-
-for(int i=0;i<=550;i++){
- digitalWrite(buzzPin,HIGH);
- delayMicroseconds(dtc13);
- digitalWrite(buzzPin,LOW);
- delayMicroseconds(dtc13);
- }
- delay(1000);
+// Sound generator for Hogwarts-style tone
+void beep(int duration, int delayMicro) {
+  for (int i = 0; i < duration; i++) {
+    digitalWrite(buzzPin, HIGH);
+    delayMicroseconds(delayMicro);
+    digitalWrite(buzzPin, LOW);
+    delayMicroseconds(delayMicro);
+  }
 }
 
+void playSimpleTune() {
+  for (int i = 0; i < 7; i++) {
+    tone(buzzPin, tones[i]);
+    digitalWrite(greenPin, HIGH);
+    digitalWrite(redPin, LOW);
+    delay(durations[i]);
+    digitalWrite(greenPin, LOW);
+    digitalWrite(redPin, HIGH);
+    noTone(buzzPin);
+    delay(100);
+  }
+  digitalWrite(redPin, LOW);
+}
+
+void playHogwartsTune() {
+  alarmActive = true;
+
+  beep(220, dtc6);
+  delay(30);
+  beep(540, dtc7);
+  delay(10);
+  beep(200, dtc8);
+  beep(300, dtc9);
+  beep(600, dtc10);
+  beep(640, dtc1);
+  beep(1100, dtc2);
+  beep(890, dtc3);
+  beep(500, dtc7);
+  beep(200, dtc8);
+  beep(200, dtc9);
+  beep(550, dtc11);
+  beep(400, dtc12);
+  beep(550, dtc13);
+
+  delay(1000);
+  alarmActive = false;
+}
 
 void setup() {
- Serial.begin(9600);
- pinMode(voltPin,INPUT);
- pinMode(greenPin,OUTPUT);
- pinMode(redPin,OUTPUT);
- pinMode(buzzPin,OUTPUT);
-
+  Serial.begin(9600);
+  pinMode(buzzPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(redPin, OUTPUT);
+  pinMode(button1Pin, INPUT_PULLUP);
+  pinMode(button2Pin, INPUT_PULLUP);
 }
 
 void loop() {
-  readVal = analogRead(voltPin);
-  Serial.println(readVal);
-  if(readVal >=150){
-    digitalWrite(greenPin,HIGH);
-    digitalWrite(redPin,LOW);
-   Hogwarts_Alarm();
+  int lightVal = analogRead(lightSensorPin);
+  int potVal = analogRead(potPin);
+  int threshold = map(potVal, 0, 1023, 50, 800);
+
+  Serial.print("Light: ");
+  Serial.print(lightVal);
+  Serial.print(" | Threshold: ");
+  Serial.println(threshold);
+
+  // Button cancel (both buttons stop alarm)
+  if (digitalRead(button1Pin) == HIGH || digitalRead(button2Pin) == HIGH) {
+    Serial.println("Everything off");
+    digitalWrite(buzzPin, LOW);
+    digitalWrite(greenPin, LOW);
+    digitalWrite(redPin, HIGH);
+    delay(30); // debounce
+    return;
   }
-  else
-    digitalWrite(redPin,HIGH);
-    digitalWrite(greenPin,LOW);
+
+  if (lightVal > threshold) {
+    Serial.println("Threshold things should be playing");
+    digitalWrite(greenPin, HIGH);
+    digitalWrite(redPin, LOW);
+    playHogwartsTune();
+    delay(100);
+  } else {
+    digitalWrite(redPin, HIGH);
+    digitalWrite(greenPin, LOW);
+  }
+
+  // Manual Hogwarts Alarm
+  if (digitalRead(button1Pin) == HIGH || digitalRead(button2Pin) == HIGH) {
+    playSimpleTune();
+  }
 }
