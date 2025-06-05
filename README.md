@@ -1,14 +1,32 @@
-# Alphaboard_projects
-Creating different exciting projects on the alphaboard dev board by @fbiego
+# Alphaboard Projects
 
-# Beginner Projects
+Exciting and fun projects built using the **Alphaboard** development board by [@fbiego](https://github.com/fbiego).
 
-## Project 1: Control Servo arms using potentiometers
-Use the 2 on board potentiometers to control the arms of servo motors
+## Beginner Projects
 
-## Project 2: Hogwarts Alarm
-### The hogwarts Alarm, place it on your window pane every night and once the sun rises, the hogwarts theme will play as an alarm
-### To switch it off, you either unplug it or turn the potentiometer to reduce sensitivity
-sensitivity of the light sensor can be tuned using the potentiometer
-### HARDOCDED THE TUNES MYSELF 
+###  Project 1: Servo Arm Control with Potentiometers  
+Control two servo motors using the onboard potentiometers on the Alphaboard.  
+This project demonstrates basic analog input reading and PWM output for servo control.
+
+**Features:**
+- Real-time control of servo angles  
+- Uses two built-in potentiometers
+
+---
+
+###  Project 2: Hogwarts Alarm  
+A magical alarm that greets the sunrise with the iconic **Hogwarts theme**!
+
+**How it works:**
+- Place the device on your window at night.  
+- When sunlight hits the light sensor in the morning, it triggers the Hogwarts theme to play.  
+- To stop the alarm, either unplug the device or adjust the potentiometer to reduce light sensor sensitivity.
+
+**Additional Notes:**
+- Light sensitivity is adjustable via the onboard potentiometer.  
+- Tunes are **hardcoded manually** 
+
+---
+
+##  More projects coming soon...
 
